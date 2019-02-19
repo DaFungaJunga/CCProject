@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CCProject</string>
+    <string name="service_name">Music Notification Reader</string>
+</resources>
