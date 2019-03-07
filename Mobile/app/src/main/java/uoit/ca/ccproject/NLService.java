@@ -18,10 +18,11 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class NLService extends NotificationListenerService {
         public ArrayList<String>playerList;
-        private String TAG = this.getClass().getSimpleName();
+        private String TAG = "TESTING";
         private NLServiceReceiver nlservicereciver;
 
         @Override
@@ -31,7 +32,7 @@ public class NLService extends NotificationListenerService {
             IntentFilter filter = new IntentFilter();
             filter.addAction("uoit.ca.ccproject.NOTIFICATION_LISTENER_SERVICE_EXAMPLE");
             registerReceiver(nlservicereciver, filter);
-            //musicPlayerList();
+            musicPlayerList();
         }
 
         @Override
@@ -50,6 +51,8 @@ public class NLService extends NotificationListenerService {
                 sendBroadcast(i);
             }catch (Exception e){
                 e.printStackTrace();
+                Log.e(TAG, "ERROR " + e);
+
             }
         }
 
@@ -64,6 +67,8 @@ public class NLService extends NotificationListenerService {
                 sendBroadcast(i);
             }catch (Exception e){
                 e.printStackTrace();
+                Log.e(TAG, "ERROR " + e);
+
             }
         }
         public void musicPlayerList(){
@@ -75,27 +80,56 @@ public class NLService extends NotificationListenerService {
 
         }
     public class sendMusicAsync extends AsyncTask<Void, Void, String> {
-            String title;
-            String text;
-        public sendMusicAsync(String ti, String te){
-            title=ti;
-            text=te;
+        String title;
+        String text;
+
+        public sendMusicAsync(String ti, String te) {
+            title = ti;
+            text = te;
         }
+
         @Override
         protected String doInBackground(Void... voids) {
+            Log.e(TAG, "Title: " + title.replaceAll(" ","+").toLowerCase());
+            Log.e(TAG, "Text: " + text.replaceAll(" ","+").toLowerCase());
 
+            HttpHandler sh = new HttpHandler();
+            // Making a request to url and getting response
+            String url = "http://api.onemusicapi.com/20151208/release?title=" + title.replaceAll(" ","+").toLowerCase() + "&artist=" + text.replaceAll(" ","+").toLowerCase() + "&user_key=511f13fd5f3daea12fe39976ef0ba7ca";
+            String jsonStr = sh.makeServiceCall(url);
+            Log.e(TAG, "Response from url: " + jsonStr);
+
+            if (jsonStr != null) {
+                try {
+                    Log.e(TAG, "Response from url: " + jsonStr);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "ERROR " + e);
+
+                }
+            }
             return null;
+
         }
     }
 
-        public void findMusic(String packageName,String title, String text){
-            for(String s:playerList){
-                if(s.equalsIgnoreCase(packageName)){
-                    sendMusicAsync sma = new sendMusicAsync(title,text);
+        public void findMusic(String packageName, String title, String text) {
+            Log.e(TAG, "SEARCHING FOR MUSIC");
+
+            for (String s : playerList) {
+                //Log.e(TAG, "player"+s);
+                //Log.e(TAG, "package"+packageName);
+
+                if (packageName.toLowerCase().contains(s.toLowerCase())) {
+                    Log.e(TAG, "FOUND PLAYER");
+
+                    sendMusicAsync sma = new sendMusicAsync(title, text);
                     sma.execute();
                 }
             }
         }
+
         class NLServiceReceiver extends BroadcastReceiver {
 
             @Override
@@ -103,6 +137,8 @@ public class NLService extends NotificationListenerService {
                 try {
 
                     Log.d("test", "recieve");
+                    Log.e(TAG, "RECEIVE");
+
 
                     if (intent.getStringExtra("command").equals("clearall")) {
                         NLService.this.cancelAllNotifications();
@@ -115,13 +151,12 @@ public class NLService extends NotificationListenerService {
                             Intent i2 = new Intent("uoit.ca.ccproject.NOTIFICATION_LISTENER_EXAMPLE");
                             try {
                                 i2.putExtra("notification_event", i + " " + sbn.getPackageName() + "n Notification Details: " + sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT).toString());
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
-                            }
-                            finally {
+                            } finally {
                                 i2.putExtra("notification_event", i + " " + sbn.getPackageName() + "n ");
                             }
-                            findMusic(sbn.getPackageName(),sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE).toString() ,sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT).toString());
+                            findMusic(sbn.getPackageName(), sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE).toString(), sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT).toString());
                             sendBroadcast(i2);
                             i++;
                         }
@@ -130,8 +165,10 @@ public class NLService extends NotificationListenerService {
                         sendBroadcast(i3);
 
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
+                    Log.e(TAG, "ERROR " + e);
+
                 }
 
             }
