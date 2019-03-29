@@ -16,6 +16,8 @@ namespace CloudProject.Models
 
         public string fk_songID { get; set; }
 
+        public DateTime dateListened { get; set; }
+
         [ForeignKey("fk_songID")]
         public Song song { get; set; }
     }

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CloudProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace CloudProject.Controllers
 {
@@ -36,22 +38,94 @@ namespace CloudProject.Controllers
             return Ok(ListenedTo);
         }
 
-        // POST api/values
+        /// <summary>
+        /// Insert a new ListenedTo Object for a user & song/artist combination
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <param name="songName"></param>
+        /// <param name="artistName"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ListenedTo value)
+        public async Task<IActionResult> Post(string userID, string songName, string artistName)
         {
-            ListenedTo newListenedTo = new ListenedTo()
+            Song ltSong = await _context.Songs.Where(s => s.songName == songName && s.artist == artistName).SingleOrDefaultAsync();
+
+            if(ltSong == null)
             {
-                listenedToID = Guid.NewGuid().ToString(),
-                fk_songID = value.fk_songID,
-                fk_userID = value.fk_userID
-            };
+                using (HttpClient client = new HttpClient())
+                {
+                    try
+                    {
+                        string APIKEY = "42e54ad1938a778f19d2e21ee2c31a60";
+                        client.BaseAddress = new Uri("http://api.onemusicapi.com");
+                        HttpResponseMessage response = await client.GetAsync($"/20151208/release?user_key={APIKEY}&title={songName}&artist={artistName}");
+                        response.EnsureSuccessStatusCode();
 
-            await _context.ListenedTos.AddAsync(newListenedTo);
-            await _context.SaveChangesAsync();
+                        string stringResult = await response.Content.ReadAsStringAsync();
 
-            return Ok(newListenedTo);
+                        List<Release> rawSong = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Release>>(stringResult);
+                        
+                        Release release = rawSong.FirstOrDefault();
+                        ListenedTo newLT = null;
+                        if ( release != null)
+                        {
+                            ////
+                            ltSong = addSong(release.title, release.artist, release.genre).Result;
+                            
+
+                            newLT = new ListenedTo()
+                            {
+                                listenedToID = Guid.NewGuid().ToString(),
+                                fk_songID = ltSong.songID,
+                                fk_userID = userID,
+                                dateListened = DateTime.Now
+                            };
+
+                            await _context.ListenedTos.AddAsync(newLT);
+                            await _context.SaveChangesAsync();
+
+                            foreach(Track t in release.media.FirstOrDefault().tracks)
+                            {
+                               await addSong(t.title, release.artist, release.genre);
+                            }
+                        }
+
+
+
+
+
+                        return Ok(newLT);
+
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        var rawSong = "rip";
+                    }
+
+                }
+
+            }
+
+            return Ok();
+            
+
+
+            //ListenedTo newListenedTo = new ListenedTo()
+            //{
+            //    listenedToID = Guid.NewGuid().ToString(),
+            //    fk_songID = value.fk_songID,
+            //    fk_userID = value.fk_userID,
+            //    dateListened = DateTime.Now
+            //};
+
+            //await _context.ListenedTos.AddAsync(newListenedTo);
+            //await _context.SaveChangesAsync();
+
+            //return Ok(newListenedTo);
         }
+
 
         // PUT api/values/5
         [HttpPut("{id}")]
@@ -66,6 +140,7 @@ namespace CloudProject.Controllers
 
             newListenedTo.fk_userID = value.fk_userID;
             newListenedTo.fk_songID = value.fk_songID;
+            newListenedTo.dateListened = value.dateListened;
 
             await _context.SaveChangesAsync();
 
@@ -88,6 +163,28 @@ namespace CloudProject.Controllers
             await _context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        private async Task<Song> addSong(string title, string artist, string genre)
+        {
+            Song newSong = await _context.Songs.Where(s => s.songName == title && s.artist == artist).SingleOrDefaultAsync();
+
+            if(newSong == null)
+            {
+                newSong = new Song()
+                {
+                    songID = Guid.NewGuid().ToString(),
+                    songName = title,
+                    artist = artist,
+                    genre = genre,
+                };
+
+                await _context.Songs.AddAsync(newSong);
+                await _context.SaveChangesAsync();
+
+            }
+
+            return newSong;
         }
     }
 }
