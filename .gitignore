@@ -1,7 +1,7 @@
 
 API/CloudProject\.vs/
 
-API/CloudProject/Fynd/bin/Debug/netcoreapp2\.2/
+API/CloudProject/bin/Debug/netcoreapp2\.2/
 
 API/CloudProject/obj/Debug/netcoreapp2\.2/
 
@@ -252,4 +252,4 @@ _Pvt_Extensions
 *.ide
 
 
-Backend Trial/Fynd/Fynd/Fynd\.xml
+API/CloudProject/CloudProject\.xml
