@@ -69,10 +69,8 @@ namespace CloudProject.Controllers
                         ListenedTo newLT = null;
                         if ( release != null)
                         {
-                            ////
-                            ltSong = addSong(release.title, release.artist, release.genre).Result;
+                            ltSong = _addSong(release.title, release.artist, release.genre).Result;
                             
-
                             newLT = new ListenedTo()
                             {
                                 listenedToID = Guid.NewGuid().ToString(),
@@ -86,18 +84,11 @@ namespace CloudProject.Controllers
 
                             foreach(Track t in release.media.FirstOrDefault().tracks)
                             {
-                               await addSong(t.title, release.artist, release.genre);
+                               await _addSong(t.title, release.artist, release.genre);
                             }
                         }
 
-
-
-
-
                         return Ok(newLT);
-
-
-
                     }
                     catch (Exception e)
                     {
@@ -107,23 +98,23 @@ namespace CloudProject.Controllers
                 }
 
             }
+            else
+            {
+                ListenedTo newLT = new ListenedTo()
+                {
+                    listenedToID = Guid.NewGuid().ToString(),
+                    fk_songID = ltSong.songID,
+                    fk_userID = userID,
+                    dateListened = DateTime.Now
+                };
 
-            return Ok();
-            
+                await _context.ListenedTos.AddAsync(newLT);
+                await _context.SaveChangesAsync();
 
+                return Ok(newLT);
+            }
 
-            //ListenedTo newListenedTo = new ListenedTo()
-            //{
-            //    listenedToID = Guid.NewGuid().ToString(),
-            //    fk_songID = value.fk_songID,
-            //    fk_userID = value.fk_userID,
-            //    dateListened = DateTime.Now
-            //};
-
-            //await _context.ListenedTos.AddAsync(newListenedTo);
-            //await _context.SaveChangesAsync();
-
-            //return Ok(newListenedTo);
+            return NoContent();
         }
 
 
@@ -165,7 +156,7 @@ namespace CloudProject.Controllers
             return Ok();
         }
 
-        private async Task<Song> addSong(string title, string artist, string genre)
+        private async Task<Song> _addSong(string title, string artist, string genre)
         {
             Song newSong = await _context.Songs.Where(s => s.songName == title && s.artist == artist).SingleOrDefaultAsync();
 
