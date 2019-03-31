@@ -14,11 +14,16 @@ namespace CloudProject
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+            // custom webhostbuilder to set custom port number (as to not interfere with other API on ec2 VM)
+            var host = new WebHostBuilder()
+                    .UseKestrel()
+                    .UseContentRoot(Directory.GetCurrentDirectory())
+                    .UseUrls("http://localhost:5050", "http://localhost:5051")
+                    .UseIISIntegration()
+                    .UseStartup<Startup>();
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+            host.Build().Run();
+
+        }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CloudProject.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("cloud/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {

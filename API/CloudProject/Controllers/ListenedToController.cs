@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace CloudProject.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("cloud/[controller]")]
     [ApiController]
     public class ListenedToController : ControllerBase
     {
@@ -167,7 +167,7 @@ namespace CloudProject.Controllers
                     songID = Guid.NewGuid().ToString(),
                     songName = title,
                     artist = artist,
-                    genre = genre,
+                    genre = genre.ToLower(),
                 };
 
                 await _context.Songs.AddAsync(newSong);

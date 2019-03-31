@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CloudProject.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("cloud/[controller]")]
     [ApiController]
     public class SongController : ControllerBase
     {
@@ -54,7 +54,7 @@ namespace CloudProject.Controllers
                         orderby grp.Count() descending
                         select grp.Key).First();
 
-            List<ListenedTo> pots = await _context.ListenedTos.Where(l => l.fk_userID != userID && l.song.genre == maxGenre && l.dateListened > DateTime.Now.AddDays(-30)).ToListAsync();
+            List<ListenedTo> pots = await _context.ListenedTos.Where(l => l.fk_userID != userID && l.song.genre == maxGenre && l.dateListened > DateTime.Now.AddDays(-30)).Include(l => l.song).ToListAsync();
 
             List<Song> sgSongs = pots.Select(l => l.song).ToList();
 
@@ -74,7 +74,7 @@ namespace CloudProject.Controllers
 
             List<ListenedTo> similarLts = await _context.ListenedTos.Where(l => l.fk_userID != userID && songNamesLt.Contains(l.fk_songID)).ToListAsync();
             List<string> similarUsers = similarLts.Select(l => l.fk_userID).Distinct().ToList();
-            List<ListenedTo> similarLts2 = await _context.ListenedTos.Where(l => similarUsers.Contains(l.fk_userID)).ToListAsync();
+            List<ListenedTo> similarLts2 = await _context.ListenedTos.Where(l => similarUsers.Contains(l.fk_userID)).Include(l => l.song).ToListAsync();
 
             List<Song> suSongs = similarLts2.Select(l => l.song).ToList();
 
