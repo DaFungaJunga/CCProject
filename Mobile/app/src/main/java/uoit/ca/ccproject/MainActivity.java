@@ -2,11 +2,13 @@ package uoit.ca.ccproject;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -22,14 +24,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends Activity {
 
     private TextView txtView;
     private NotificationReceiver nReceiver;
-
+    int hr;
+    int min;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +46,8 @@ public class MainActivity extends Activity {
             setContentView(R.layout.activity_main);
             txtView = (TextView) findViewById(R.id.textView);
             nReceiver = new NotificationReceiver();
+            pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+            editor = pref.edit();
             IntentFilter filter = new IntentFilter();
             filter.addAction("uoit.ca.ccproject.NOTIFICATION_LISTENER_EXAMPLE");
             registerReceiver(nReceiver, filter);
@@ -67,7 +76,30 @@ public class MainActivity extends Activity {
             ctxt.sendBroadcast(explicit);
         }
     }
+    public void showHourPicker() {
+        final Calendar myCalender = Calendar.getInstance();
+        final int hour = myCalender.get(Calendar.HOUR_OF_DAY);
+        int minute = myCalender.get(Calendar.MINUTE);
 
+
+        TimePickerDialog.OnTimeSetListener myTimeListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                if (view.isShown()) {
+                    myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    myCalender.set(Calendar.MINUTE, minute);
+                    hr = hourOfDay;
+                    min = minute;
+                    editor.putInt("hour",hr);
+                    editor.putInt("minute",minute);
+                }
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, android.R.style.Theme_Holo_Light_Dialog_NoActionBar, myTimeListener, hour, minute, true);
+        timePickerDialog.setTitle("Choose hour:");
+        timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        timePickerDialog.show();
+    }
     public void buttonClicked(View v) {
         try {
             Log.d("test", "button clicked");
@@ -99,6 +131,10 @@ public class MainActivity extends Activity {
                 sendBroadcast(i);
                 //sendImplicitBroadcast(this,i);
             }
+            else if (v.getId() == R.id.btnSetTime) {
+               showHourPicker();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

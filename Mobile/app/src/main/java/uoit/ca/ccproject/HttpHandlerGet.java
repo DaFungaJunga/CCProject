@@ -22,11 +22,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class HttpHandler {
+public class HttpHandlerGet {
 
-    private static final String TAG = "TESTING";
+    private static final String TAG = "HTTP GET";
 
-    public HttpHandler() {
+    public HttpHandlerGet() {
     }
 
     public String makeServiceCall(String reqUrl) {
@@ -37,9 +37,9 @@ public class HttpHandler {
             //js.put("token",token);
             URL url = new URL(reqUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            // conn.setRequestMethod("GET");
+            conn.setRequestMethod("GET");
             //conn.setRequestProperty("Content-Type", "application/json-patch+json;charset=UTF-8");
-            // conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept", "application/json");
             //conn.setDoInput(true);
             //conn.setDoOutput(true);
 
@@ -51,13 +51,11 @@ public class HttpHandler {
             //InputStream in = new BufferedInputStream(conn.getInputStream());
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
-            while ((line = br.readLine()) != null)
-            {
+            while ((line = br.readLine()) != null) {
                 response = "";// String variable declared global
                 response += line;
-                Log.i("response_line", response);
+                //Log.i("response_line", response);
             }
-            //response = convertStreamToString(in);
         } catch (MalformedURLException e) {
             Log.e(TAG, "MalformedURLException: " + e.getMessage());
         } catch (ProtocolException e) {
@@ -67,31 +65,8 @@ public class HttpHandler {
         } catch (Exception e) {
             Log.e(TAG, "Exception: " + e.getMessage());
         }
-        Log.e(TAG, "response"+response);
+        //Log.e(TAG, "response"+response);
 
         return response;
     }
-
-    private String convertStreamToString(InputStream is) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append('\n');
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return sb.toString();
-    }
-
 }

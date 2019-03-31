@@ -28,20 +28,37 @@
         android:onClick="buttonClicked"
         android:text="Clear All Notification" />
 
-    <ScrollView android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/btnListNotify"
+    <Button
+        android:id="@+id/btnSetTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/btnListNotify"
-        android:layout_alignLeft="@+id/btnListNotify">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="-1dp"
+        android:layout_marginEnd="2dp"
+        android:onClick="buttonClicked"
+        android:text="Set Time" />
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="524dp"
+        android:layout_below="@+id/btnSetTime"
+        android:layout_alignLeft="@+id/btnListNotify"
+        android:layout_alignRight="@+id/btnListNotify"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="-4dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="1dp">
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="NotificationListenerService Example"
-            android:id="@+id/textView"
-            />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </ScrollView>
 
@@ -54,4 +71,5 @@
         android:layout_alignRight="@+id/btnClearNotify"
         android:onClick="buttonClicked"
         android:text="List of Notification" />
+
 </RelativeLayout>

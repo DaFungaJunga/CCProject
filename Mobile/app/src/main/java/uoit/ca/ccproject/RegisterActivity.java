@@ -13,11 +13,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-    public void goBack(View v){
+    public void goBack(View v) {
         this.finish();
     }
 }
