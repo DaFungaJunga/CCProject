@@ -38,13 +38,13 @@ namespace CloudProject.Controllers
             return Ok(ListenedTo);
         }
 
-        /// <summary>
-        /// Insert a new ListenedTo Object for a user & song/artist combination
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <param name="songName"></param>
-        /// <param name="artistName"></param>
-        /// <returns></returns>
+       /// <summary>
+       /// insert a listenedTo, this will add songs to database from same album
+       /// </summary>
+       /// <param name="userID"></param>
+       /// <param name="songName"></param>
+       /// <param name="artistName"></param>
+       /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post(string userID, string songName, string artistName)
         {

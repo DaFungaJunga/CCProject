@@ -25,6 +25,10 @@ namespace CloudProject.Controllers
         {
             IList<User> users = await _context.Users.Include(u => u.songs).ThenInclude(l => l.song).ToListAsync();
 
+            foreach(User u in users)
+            {
+                u.password = null;
+            }
             return Ok(users);
         }
 
@@ -33,7 +37,36 @@ namespace CloudProject.Controllers
         public async Task<IActionResult> Get(string id)
         {
             User user = await _context.Users.Where(u => u.userID == id).Include(u => u.songs).ThenInclude(l => l.song).SingleOrDefaultAsync();
+            user.password = null;
             return Ok(user);
+        }
+
+        /// <summary>
+        /// login
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [HttpPost("{userName}")]
+        public async Task<IActionResult> Login(string userName, User value)
+        {
+            User user = await _context.Users.Where(u => u.userName == userName).SingleOrDefaultAsync();
+
+            if(user == null)
+            {
+                return BadRequest("user not found");
+            }
+
+            if(user.password != value.password)
+            {
+                return BadRequest("Incorrect password");
+            }
+            else
+            {
+                user.password = null;
+                return Ok(user);
+            }
+
         }
 
         // POST api/values
@@ -43,12 +76,14 @@ namespace CloudProject.Controllers
             User newUser = new User()
             {
                 userID = Guid.NewGuid().ToString(),
-                userName = value.userName
+                userName = value.userName,
+                password = value.password
             };
 
             await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
 
+            newUser.password = null;
             return Ok(newUser);
         }
 
@@ -68,6 +103,7 @@ namespace CloudProject.Controllers
             
             await _context.SaveChangesAsync();
 
+            newUser.password = null;
             return Ok(newUser);
 
         }

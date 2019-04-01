@@ -4,6 +4,29 @@
         <name>CloudProject</name>
     </assembly>
     <members>
-        <!-- Badly formed XML comment ignored for member "M:CloudProject.Controllers.ListenedToController.Post(System.String,System.String,System.String)" -->
+        <member name="M:CloudProject.Controllers.ListenedToController.Post(System.String,System.String,System.String)">
+            <summary>
+            insert a listenedTo, this will add songs to database from same album
+            </summary>
+            <param name="userID"></param>
+            <param name="songName"></param>
+            <param name="artistName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CloudProject.Controllers.SongController.RecommendSongs(System.String)">
+            <summary>
+            get song recommendations
+            </summary>
+            <param name="userID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CloudProject.Controllers.UserController.Login(System.String,CloudProject.Models.User)">
+            <summary>
+            login
+            </summary>
+            <param name="userName"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
