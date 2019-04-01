@@ -29,7 +29,11 @@ namespace CloudProject.Controllers
             return Ok(Songs);
         }
 
-        // GET api/values/5
+        /// <summary>
+        /// get song recommendations
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <returns></returns>
         [HttpGet("{userID}")]
         public async Task<IActionResult> RecommendSongs(string userID)
         {
