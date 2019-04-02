@@ -106,7 +106,7 @@ namespace CloudProject.Controllers
                                      select grp.Key).First().song;
 
 
-                    string APIKEY = "42e54ad1938a778f19d2e21ee2c31a60";
+                    string APIKEY = "451bb3863ad571f75d87164152f909ba";
                     client.BaseAddress = new Uri("http://api.onemusicapi.com");
                     HttpResponseMessage response = await client.GetAsync($"/20151208/release?user_key={APIKEY}&title={maxASong.songName}&artist={maxASong.artist}");
                     response.EnsureSuccessStatusCode();
