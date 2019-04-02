@@ -17,7 +17,10 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -48,7 +51,7 @@ public class NLService extends NotificationListenerService {
         nlservicereciver = new NLServiceReceiver();
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
-        userID = "1";
+        userID = pref.getString("userId","1");
         handler = new Handler(getApplicationContext().getMainLooper());
 
         IntentFilter filter = new IntentFilter();
@@ -70,6 +73,24 @@ public class NLService extends NotificationListenerService {
             Log.i(TAG, "ID :" + sbn.getId() + "t" + sbn.getNotification().tickerText + "t" + sbn.getPackageName());
             Intent i = new Intent("uoit.ca.ccproject.NOTIFICATION_LISTENER_EXAMPLE");
             i.putExtra("notification_event", "onNotificationPosted :" + sbn.getPackageName() + "n");
+
+
+            String str = String.format("%02d:%02d", pref.getInt("hour",1), pref.getInt("minute",1));
+            //Date time1 = new SimpleDateFormat("HH:mm").parse(str);
+            //String current = new SimpleDateFormat("HH:mm").format(new Date());
+            Calendar c = Calendar.getInstance();
+            int currentHour = c.get(Calendar.HOUR_OF_DAY);
+            int currentMinute = c.get(Calendar.MINUTE);
+            Log.e(TAG, String.valueOf(currentHour));
+            Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
+
+            if(currentHour ==pref.getInt("hour",1) ){
+                getMusicAsync gma = new getMusicAsync();
+                gma.execute();
+            }
+
+
+
             sendBroadcast(i);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,7 +131,7 @@ public class NLService extends NotificationListenerService {
             HttpHandlerGet sh = new HttpHandlerGet();
             // Making a request to url and getting response
             //String url = "http://api.onemusicapi.com/20151208/release?title=" + title.replaceAll(" ","+").toLowerCase() + "&artist=" + text.replaceAll(" ","+").toLowerCase() + "&user_key=511f13fd5f3daea12fe39976ef0ba7ca";
-            String url = "http://99.79.42.247/cloud/Song/" + userID;
+            String url = "http://99.79.42.247/cloud/Song/" + pref.getString("userID","1");
             final String jsonStr = sh.makeServiceCall(url);
             Log.e(TAG, "Response from url GET: " + jsonStr);
 
@@ -119,14 +140,22 @@ public class NLService extends NotificationListenerService {
                     //Log.e(TAG, "Response from url: " + jsonStr);
                     JSONArray results = new JSONArray(jsonStr);
                     String recommendations ="";
+                    ArrayList<Spanned> links = new ArrayList<Spanned>();
                     for (int i = 0; i < results.length(); i++) {
                         JSONObject c = results.getJSONObject(i);
 
-                        String songNmae = c.getString("songName");
-                        String songID = c.getString("songID");
-                        String artist = c.getString("artist");
-                        String genre = c.getString("genre");
-                        recommendations = recommendations + String.valueOf(i+1)+": "+ songNmae+ " "+artist;
+                        String videoID = c.getString("videoID");
+                        String videoTitle = c.getString("videoTitle");
+
+                        JSONObject s = c.getJSONObject("song");
+
+                        String songNmae = s.getString("songName");
+                        String songID = s.getString("songID");
+                        String artist = s.getString("artist");
+                        String genre = s.getString("genre");
+                        recommendations = recommendations + String.valueOf(i+1)+": "+ songNmae+ " "+artist+"\n "+"Genre: "+ genre+"\n";
+                        Spanned link = Html.fromHtml("<a href='"+videoID+"'>"+videoTitle+"</a> ");
+                        links.add(link);
                     }
 
                     final String finalRecommendations = recommendations;
@@ -138,6 +167,14 @@ public class NLService extends NotificationListenerService {
                                     Toast.LENGTH_LONG).show();
                         }
                     });
+                    Intent i3 = new Intent("uoit.ca.ccproject.NOTIFICATION_LISTENER_EXAMPLE");
+                    i3.putExtra("rec", finalRecommendations);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("links",links);
+                    i3.putExtra("bundle", bundle);
+
+                    sendBroadcast(i3);
+
                     Log.e(TAG, "GET successful ");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -224,10 +261,15 @@ public class NLService extends NotificationListenerService {
                 Calendar c = Calendar.getInstance();
                 int currentHour = c.get(Calendar.HOUR_OF_DAY);
                 int currentMinute = c.get(Calendar.MINUTE);
-                if(currentHour ==pref.getInt("hour",1) ){
-                    getMusicAsync gma = new getMusicAsync();
+                //Log.e(TAG, String.valueOf(currentHour));
+                //Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
+
+                /*if(currentHour ==pref.getInt("hour",1) && currentMinute ==pref.getInt("minute",1) ){
+                //if(String.valueOf(currentHour).compareTo(pref.getString("hour","one"))==0){
+
+                getMusicAsync gma = new getMusicAsync();
                     gma.execute();
-                }
+                }*/
 
                 if (intent.getStringExtra("command").equals("clearall")) {
                     NLService.this.cancelAllNotifications();

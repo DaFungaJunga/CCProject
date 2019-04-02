@@ -1,40 +1,41 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/btnCreateNotify"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
         android:onClick="buttonClicked"
         android:text="Create Notification" />
 
     <Button
         android:id="@+id/btnClearNotify"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnCreateNotify"
-        android:layout_alignLeft="@+id/btnCreateNotify"
-        android:layout_alignRight="@+id/btnCreateNotify"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
         android:onClick="buttonClicked"
         android:text="Clear All Notification" />
+
+    <Button
+        android:id="@+id/btnListNotify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="buttonClicked"
+        android:text="List of Notification" />
 
     <Button
         android:id="@+id/btnSetTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnListNotify"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="-1dp"
         android:layout_marginEnd="2dp"
@@ -42,34 +43,53 @@
         android:text="Set Time" />
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="524dp"
-        android:layout_below="@+id/btnSetTime"
-        android:layout_alignLeft="@+id/btnListNotify"
-        android:layout_alignRight="@+id/btnListNotify"
-        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:layout_marginLeft="-4dp"
         android:layout_marginTop="7dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="1dp">
+        android:layout_marginRight="4dp">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="NotificationListenerService Example"
+            android:text="Recieved Notifications"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </ScrollView>
 
-    <Button
-        android:id="@+id/btnListNotify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnClearNotify"
-        android:layout_alignLeft="@+id/btnClearNotify"
-        android:layout_alignRight="@+id/btnClearNotify"
-        android:onClick="buttonClicked"
-        android:text="List of Notification" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtRec"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recommenations" />
+        </LinearLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txtLinks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Links" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
