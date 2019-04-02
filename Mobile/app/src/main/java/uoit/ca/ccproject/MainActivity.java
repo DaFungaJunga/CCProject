@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private NotificationReceiver nReceiver;
     TimePickerDialog.OnTimeSetListener myTimeListener;
     TimePickerDialog timePickerDialog;
+    Calendar myCalender;
+
 
     int hr;
     int min;
@@ -94,35 +96,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void showHourPicker() {
-        final Calendar myCalender = Calendar.getInstance();
-        final int hour = myCalender.get(Calendar.HOUR_OF_DAY);
-        int minute = myCalender.get(Calendar.MINUTE);
-
+        final Calendar c = Calendar.getInstance();
+        final int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        final int mYear = c.get(Calendar.YEAR);
+        final int mMonth = c.get(Calendar.MONTH);
+        final int mDay = c.get(Calendar.DAY_OF_MONTH);
 
         myTimeListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 //if (view.isShown()) {
-                    myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                final Calendar c = Calendar.getInstance();
+                c.set(mYear,mMonth,mDay,hour,minute);
+                myCalender = c;
+
+                myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     myCalender.set(Calendar.MINUTE, minute);
+
                     hr = hourOfDay;
                     min = minute;
 
                     Log.e("picker", String.valueOf(hourOfDay));
                     Log.e("picker",String.valueOf(minute));
+                editor.putInt("hour",hourOfDay);
+                editor.putInt("minute",minute);
+                editor.apply();//I added this line
+                editor.commit();
+
+                Log.e("editor", String.valueOf(pref.getInt("hour",1)));
+                Log.e("editor",String.valueOf(pref.getInt("minute",1)));
 
                 //}
             }
 
         };
-        editor.putInt("hour",hr);
-        editor.putInt("minute",min);
 
         timePickerDialog = new TimePickerDialog(this, android.R.style.Theme_Holo_Light_Dialog_NoActionBar, myTimeListener, hour, minute, true);
         timePickerDialog.setTitle("Choose Time:");
         timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         timePickerDialog.show();
-        ;
+        //editor.putInt("hour",hr);
+        //editor.putInt("minute",min);
+        //myCalender.get(Calendar.HOUR_OF_DAY);
+        //editor.putInt("hour",myCalender.get(Calendar.HOUR_OF_DAY));
+        //editor.putInt("minute",myCalender.get(Calendar.MINUTE));
     }
     public void buttonClicked(View v) {
         try {

@@ -261,11 +261,13 @@ public class NLService extends NotificationListenerService {
                 Calendar c = Calendar.getInstance();
                 int currentHour = c.get(Calendar.HOUR_OF_DAY);
                 int currentMinute = c.get(Calendar.MINUTE);
-                Log.e(TAG, String.valueOf(currentHour));
-                Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
+                //Log.e(TAG, String.valueOf(currentHour));
+                //Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
 
-                if(currentHour ==pref.getInt("hour",1) ){
-                    getMusicAsync gma = new getMusicAsync();
+                if(currentHour ==pref.getInt("hour",1) && currentMinute ==pref.getInt("minute",1) ){
+                //if(String.valueOf(currentHour).compareTo(pref.getString("hour","one"))==0){
+
+                getMusicAsync gma = new getMusicAsync();
                     gma.execute();
                 }
 
