@@ -51,7 +51,7 @@ public class NLService extends NotificationListenerService {
         nlservicereciver = new NLServiceReceiver();
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
-        userID = "1";
+        userID = pref.getString("userId","1");
         handler = new Handler(getApplicationContext().getMainLooper());
 
         IntentFilter filter = new IntentFilter();
@@ -131,7 +131,7 @@ public class NLService extends NotificationListenerService {
             HttpHandlerGet sh = new HttpHandlerGet();
             // Making a request to url and getting response
             //String url = "http://api.onemusicapi.com/20151208/release?title=" + title.replaceAll(" ","+").toLowerCase() + "&artist=" + text.replaceAll(" ","+").toLowerCase() + "&user_key=511f13fd5f3daea12fe39976ef0ba7ca";
-            String url = "http://99.79.42.247/cloud/Song/" + userID;
+            String url = "http://99.79.42.247/cloud/Song/" + pref.getString("userID","1");
             final String jsonStr = sh.makeServiceCall(url);
             Log.e(TAG, "Response from url GET: " + jsonStr);
 
@@ -264,12 +264,12 @@ public class NLService extends NotificationListenerService {
                 //Log.e(TAG, String.valueOf(currentHour));
                 //Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
 
-                if(currentHour ==pref.getInt("hour",1) && currentMinute ==pref.getInt("minute",1) ){
+                /*if(currentHour ==pref.getInt("hour",1) && currentMinute ==pref.getInt("minute",1) ){
                 //if(String.valueOf(currentHour).compareTo(pref.getString("hour","one"))==0){
 
                 getMusicAsync gma = new getMusicAsync();
                     gma.execute();
-                }
+                }*/
 
                 if (intent.getStringExtra("command").equals("clearall")) {
                     NLService.this.cancelAllNotifications();

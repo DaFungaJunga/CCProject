@@ -111,6 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                         signIn = true;
                         editor.putString("userName", name);
                         editor.putString("userID", ID);
+                        editor.apply();//I added this line
+                        editor.commit();
                     }else{
                         signIn = false;
                     }
