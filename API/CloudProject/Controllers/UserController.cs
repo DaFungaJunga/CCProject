@@ -73,6 +73,11 @@ namespace CloudProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] User value)
         {
+            User user = await _context.Users.Where(u => u.userName == value.userName).SingleOrDefaultAsync();
+            if(user != null)
+            {
+                return BadRequest("Username taken");
+            }
             User newUser = new User()
             {
                 userID = Guid.NewGuid().ToString(),
