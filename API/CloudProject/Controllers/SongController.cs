@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CloudProject.Models;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -128,8 +130,14 @@ namespace CloudProject.Controllers
                 }
 
             }
+            List<SongURL> songRecs = new List<SongURL>();
+
+            foreach(Song s in recommendations)
+            {
+                songRecs.Add(youtube(s).Result);
+            }
             
-            return Ok(recommendations);
+            return Ok(songRecs);
         }
 
         // POST api/values
@@ -187,5 +195,31 @@ namespace CloudProject.Controllers
 
             return Ok();
         }
+
+
+        private async Task<SongURL> youtube(Song song)
+        {
+            YouTubeService youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApiKey = "AIzaSyCEsRAW1IZ7iqqsCaUpVAhwS5oBJzBEF18",
+                ApplicationName = "CloudProject"
+            });
+
+            var searchListRequest = youtubeService.Search.List("snippet");
+            searchListRequest.Q = $"{song.songName} {song.artist}";
+            searchListRequest.MaxResults = 1;
+            searchListRequest.Type = "video";
+
+
+            var searchListResponse = await searchListRequest.ExecuteAsync();
+
+            SongURL songurl = new SongURL();
+            songurl.song = song;
+            songurl.videoID = "https://www.youtube.com/watch?v=" + searchListResponse.Items.First().Id.VideoId ;
+            songurl.videoTitle = searchListResponse.Items.First().Snippet.Title;
+
+
+            return songurl;
+        } 
     }
 }
