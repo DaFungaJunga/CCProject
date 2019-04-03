@@ -51,7 +51,7 @@ public class NLService extends NotificationListenerService {
         nlservicereciver = new NLServiceReceiver();
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
-        userID = pref.getString("userId","1");
+        userID = pref.getString("userID","1");
         handler = new Handler(getApplicationContext().getMainLooper());
 
         IntentFilter filter = new IntentFilter();
@@ -80,14 +80,16 @@ public class NLService extends NotificationListenerService {
             //String current = new SimpleDateFormat("HH:mm").format(new Date());
             Calendar c = Calendar.getInstance();
             int currentHour = c.get(Calendar.HOUR_OF_DAY);
+            int currentDay = c.get(Calendar.DAY_OF_MONTH);
             int currentMinute = c.get(Calendar.MINUTE);
             Log.e(TAG, String.valueOf(currentHour));
             Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
 
-            if(currentHour ==pref.getInt("hour",1) ){
+            /*if(currentHour ==pref.getInt("hour",1) &&!pref.getBoolean("disable",true)){
                 getMusicAsync gma = new getMusicAsync();
                 gma.execute();
-            }
+                editor.putBoolean("disable",false);
+            }*/
 
 
 
@@ -203,7 +205,7 @@ public class NLService extends NotificationListenerService {
             HttpHandlerPost sh = new HttpHandlerPost();
             // Making a request to url and getting response
             //String url = "http://api.onemusicapi.com/20151208/release?title=" + title.replaceAll(" ","+").toLowerCase() + "&artist=" + text.replaceAll(" ","+").toLowerCase() + "&user_key=511f13fd5f3daea12fe39976ef0ba7ca";
-            String url = "http://99.79.42.247/cloud/ListenedTo?userID=" + userID + "&songName=" + title.replaceAll(" ", "%20").toLowerCase() + "&artistName=" + text.replaceAll(" ", "%20").toLowerCase();
+            String url = "http://99.79.42.247/cloud/ListenedTo?userID=" +pref.getString("userID","1") + "&songName=" + title.replaceAll(" ", "%20").toLowerCase() + "&artistName=" + text.replaceAll(" ", "%20").toLowerCase();
             String jsonStr = sh.makeServiceCall(url);
             Log.e(TAG, "Response from url POST: " + jsonStr);
 
@@ -225,8 +227,20 @@ public class NLService extends NotificationListenerService {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            getMusicAsync gma = new getMusicAsync();
-            gma.execute();
+            String str = String.format("%02d:%02d", pref.getInt("hour",1), pref.getInt("minute",1));
+            //Date time1 = new SimpleDateFormat("HH:mm").parse(str);
+            //String current = new SimpleDateFormat("HH:mm").format(new Date());
+            Calendar c = Calendar.getInstance();
+            int currentHour = c.get(Calendar.HOUR_OF_DAY);
+            int currentDay = c.get(Calendar.DAY_OF_MONTH);
+            int currentMinute = c.get(Calendar.MINUTE);
+            Log.e(TAG, String.valueOf(currentHour));
+            Log.e(TAG, String.valueOf(pref.getInt("hour",1)));
+            if(pref.getBoolean("disable",true)) {
+                getMusicAsync gma = new getMusicAsync();
+                gma.execute();
+                editor.putBoolean("disable", false);
+            }
         }
     }
 
