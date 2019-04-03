@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                         nManager.createNotificationChannel(mChannel);
                     }
                     NotificationCompat.Builder ncomp = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
-                    ncomp.setContentTitle("New Recommendation");
+                    ncomp.setContentTitle("New Recommendations");
                     //ncomp.setContentText("Notification Listener Service Example");
                     ncomp.setContentText(txtLinks.getText());
                     ncomp.setTicker("Notification Listener Service Example");
