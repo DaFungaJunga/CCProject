@@ -201,7 +201,7 @@ namespace CloudProject.Controllers
         {
             YouTubeService youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
-                ApiKey = "AIzaSyCEsRAW1IZ7iqqsCaUpVAhwS5oBJzBEF18",
+                ApiKey = "AIzaSyAj8ncAKqK6Stj611qntKmoWUK1Q8lq8mI",
                 ApplicationName = "CloudProject"
             });
 
